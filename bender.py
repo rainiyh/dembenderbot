@@ -85,15 +85,18 @@ async def on_message(message):
 def donationStatsHandling():
     # clandem1
     playerData = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag) + '/members', headers = head).json()
-    print(playerData)
     # clandem2
     playerDataCD2 = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag2) + '/members', headers = head).json()
     playerDataStr = json.dumps(playerData)
     playerDataStrCD2 = json.dumps(playerDataCD2)
     numOfPlayers = len(re.findall('\\bdonations\\b', playerDataStr))
     numOfPlayersCD2 = len(re.findall('\\bdonations\\b', playerDataStrCD2))
+
     # Currently all Alt accounts need to be added in manually
-    altAccounts = []
+    # Program by default will use the first tag as the main account
+    # Structure [[Main account tag, alt account tag, alt account tag], [main account tag, alt account tag], [...]]
+    #                  Jabu         Money        Hurty           Nige          Homme         Ethan         Ethan2       Ethan3        Ethan4
+    altAccounts = [['#U2Y9U82Q', '#98VCGYCQ', '#LJLGU2LGL'], ['#28ULJVPP', '#28880LJQ'], ['#2JL80PJQC', '#2U2LP2GCG', '#C022UYPV', '#LUPJ8Q8U8']]
     donationString = ''
     donationArray = []
     playerName = ''
@@ -109,10 +112,16 @@ def donationStatsHandling():
     for i in range(0, numOfPlayersCD2):
         playerName = playerDataCD2['items'][i]['name']
         donations = playerDataCD2['items'][i]['donations']
-        layerID = playerDataCD2['items'][i]['tag']
+        playerID = playerDataCD2['items'][i]['tag']
         donationArray.append([donations, playerName, playerID])
 
     print(donationArray)
+
+    for i in range(0, len(altAccounts)):
+        for j in range(0, len(altAccounts[i])):
+            for k in range(0, len(donationArray)):
+                if altAccounts[i][j] == donationArray[k][2]:
+                    print('found a match')
 
     donationArray.sort(reverse=True)
 
