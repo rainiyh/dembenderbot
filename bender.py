@@ -35,6 +35,10 @@ async def on_message(message):
             response = 'Bite my shiny metal ass.'
             await message.channel.send(response)
 
+        elif message.content == '!help':
+            response = '`!donations`: List donations'
+            await message.channel.send(response)
+
         # explain self
         elif message.content == '!hi' or message.content == '!bot':
             response = 'I am Bender. Please insert girder.'
@@ -43,6 +47,10 @@ async def on_message(message):
         # call out stallers
         elif 'not stall' in message.content or "i didn't stall" in message.content.lower() or 'i didnt stall' in message.content.lower():
             response = 'Ok, staller'
+            await message.channel.send(response)
+
+        elif 'git gud' in message.content:
+            response = "`git: 'gud' is not a git command. See 'git --help'.`"
             await message.channel.send(response)
 
         # toss coin
@@ -69,6 +77,18 @@ async def on_message(message):
                 response = 'Bad syntax'
             await message.channel.send(response)
 
+        elif message.content.startswith('!joke'):
+            jokeStr = ""
+            jokeJson = requests.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit').json()
+            jokeJson = json.dumps(jokeJson)
+            jokeJson = json.loads(jokeJson)
+
+            if jokeJson['type'] == 'twopart':
+                jokeStr += jokeJson['setup'] + "\n" + jokeJson['delivery'] + '\n'
+            else:
+                jokeStr += jokeJson['joke'] + "\n"
+            await message.channel.send(jokeStr)
+
         # API request
         elif message.content.startswith ('!get'):
             dataResponse = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag), headers = head)
@@ -81,55 +101,60 @@ async def on_message(message):
             await message.channel.send(donations)
             print("Listed Donations")
 
+        elif message.content.startswith('!'):
+            await message.channel.send("Unknown command. `!help` for commands.")
+
+
 # Donations function
 def donationStatsHandling():
-    # clandem1
     playerData = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag) + '/members', headers = head).json()
-    # clandem2
     playerDataCD2 = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag2) + '/members', headers = head).json()
-    playerDataStr = json.dumps(playerData)
-    playerDataStrCD2 = json.dumps(playerDataCD2)
-    numOfPlayers = len(re.findall('\\bdonations\\b', playerDataStr))
-    numOfPlayersCD2 = len(re.findall('\\bdonations\\b', playerDataStrCD2))
+    playerData['items'].extend(playerDataCD2['items'])
 
     # Currently all Alt accounts need to be added in manually
-    # Program by default will use the first tag as the main account
-    # Structure [[Main account tag, alt account tag, alt account tag], [main account tag, alt account tag], [...]]
-    #                  Jabu         Money        Hurty           Nige          Homme         Ethan         Ethan2       Ethan3        Ethan4
-    altAccounts = [['#U2Y9U82Q', '#98VCGYCQ', '#LJLGU2LGL'], ['#28ULJVPP', '#28880LJQ'], ['#2JL80PJQC', '#2U2LP2GCG', '#C022UYPV', '#LUPJ8Q8U8']]
-    donationString = ''
-    donationArray = []
-    playerName = ''
-    donations = 0
-    playerID = 0
+    #                 money        jabu          hurty          jabu
+    altAccounts = {'#98VCGYCQ': '#U2Y9U82Q', '#2CG98CCCR' : '#U2Y9U82Q',\
+    #   homme         nige         ethan2         ethan
+     '#28880LJQ': '#28ULJVPP', '#2U2LP2GCG' : '#2JL80PJQC',\
+    #   ethan3        ethan        ethan4         ethan
+     '#C022UYPV': '#2JL80PJQC', '#LUPJ8Q8U8': '#2JL80PJQC'}
 
-    for i in range(0, numOfPlayers):
-        playerName = playerData['items'][i]['name']
-        donations = playerData['items'][i]['donations']
-        playerID = playerData['items'][i]['tag']
-        donationArray.append([donations, playerName, playerID])
+    donationString = '**Donations:**\n'
+    donationDict = {}
 
-    for i in range(0, numOfPlayersCD2):
-        playerName = playerDataCD2['items'][i]['name']
-        donations = playerDataCD2['items'][i]['donations']
-        playerID = playerDataCD2['items'][i]['tag']
-        donationArray.append([donations, playerName, playerID])
+    for item in playerData['items']:
+        # read json data
+        account = item['tag']
+        # var for keeping player tags
+        if account in altAccounts:
+        # if the current tag in json data is found in the altAccounts dict
+            primaryAccount = altAccounts[account]
+            # Set the primary account to whatever the key is for the current account in the altAccounts dict
+        else:
+            # the account must not be found in the altAccounts dict
+            primaryAccount = account
+            # set the primary account to whatever the current tag is on
 
-    print(donationArray)
+        if primaryAccount in donationDict:
+        # if the primary account is in donationDict
+            donationInfo = donationDict[primaryAccount]
+            # set donationInfo to the data inside the donationDict primaryAccount (will be donations, and player name)
+        else:
+        # if the primaryAccount is not in donationDict
+            donationInfo = [0, item['name']]
+            # set the donation info to 0 donated, and the name of the player
+        donationInfo[0] += item["donations"]
+        # add the donations of the current account onto the donationInfo array
+        donationDict[primaryAccount] = donationInfo
+        # update the dict with the new donationInfo
 
-    for i in range(0, len(altAccounts)):
-        for j in range(0, len(altAccounts[i])):
-            for k in range(0, len(donationArray)):
-                if altAccounts[i][j] == donationArray[k][2]:
-                    print('found a match')
+    for i in donationDict:
+        donationString += (donationDict[i][1])
+        if i in altAccounts.values():
+            donationString += (" *(Alt account(s) included)*")
+        donationString += (": " + str(donationDict[i][0]) + "\n")
 
-    donationArray.sort(reverse=True)
-
-    donationString += '**Donations:**\n'
-
-    for i in range(0, len(donationArray)):
-        donationString += str(donationArray[i][1]) + ": "
-        donationString += str(donationArray[i][0]) + '\n'
+    print(donationDict)
 
     return donationString
 
