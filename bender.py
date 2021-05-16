@@ -77,6 +77,7 @@ async def on_message(message):
                 response = 'Bad syntax'
             await message.channel.send(response)
 
+        # tell a joke
         elif message.content.startswith('!joke'):
             jokeStr = ""
             jokeJson = requests.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit').json()
@@ -117,44 +118,49 @@ def donationStatsHandling():
     #   homme         nige         ethan2         ethan
      '#28880LJQ': '#28ULJVPP', '#2U2LP2GCG' : '#2JL80PJQC',\
     #   ethan3        ethan        ethan4         ethan
-     '#C022UYPV': '#2JL80PJQC', '#LUPJ8Q8U8': '#2JL80PJQC'}
+     '#C022UYPV': '#2JL80PJQC', '#LUPJ8Q8U8': '#2JL80PJQC',\
+    #  cliff2       cliff         connor       cliff
+     '#PLRUGG': '#29G2LJCU8', '#290RLQ2RJ': '#29G2LJCU8',\
+    #   olivia        cliff          bot          cliff
+     '#98YV29P99': '#29G2LJCU8', '#Q28PCL9PU': '#29G2LJCU8',\
+    #   chinook        rain          wild2         wild
+     '#Q28UJGYJ8': '#LYLP29U8R', '#Y09QGJRCQ': '#20PQ92V9J',\
+    #   vampkon     vampwolf      vampmuis      vampwolf
+     '#LUQJRRJ2Q': '#Q8C9L28L', '#LV92QVVYP': '#Q8C9L28L',\
+    #  vampmeeuw     vampwolf      popcornv3      popcorn
+     '#LUL8UPYYU' : '#Q8C9L28L', '#LPQPVGVGU': '#9PL80RPQR',\
+    #   rushsam         sam          brosam         sam
+     '#QYG8LRP20' : '#PVYCPL0Y2', '#LUVLC9QGP': '#PVYCPL0Y2',\
+    #  darferino       darfo       gigadarf        darfo
+     '#LY90RVV0U': '#L2URG8QCY', '#Q2Q9RG00R': '#L2URG8QCY',\
+    #   tictac2      tictac      jeremysuf       jeremy
+     '#QL8GPUGV0': '#VLQULJ8V', '#LGLRV0Y09': '#PRU8L9YCR',\
+    #   mojie         moojie       smoljie        moojie
+     '#YG8JPL98V': '#2GCVUPYUC', '#Q09LVGPQL': '#YG8JPL98V',\
+    #   delph         nige          alan          nige
+     '#2Y0LC00UY': '#28ULJVPP', '#L82CCUGV0': '#28ULJVPP'}
 
     donationString = '**Donations:**\n'
     donationDict = {}
 
     for item in playerData['items']:
-        # read json data
         account = item['tag']
-        # var for keeping player tags
         if account in altAccounts:
-        # if the current tag in json data is found in the altAccounts dict
             primaryAccount = altAccounts[account]
-            # Set the primary account to whatever the key is for the current account in the altAccounts dict
         else:
-            # the account must not be found in the altAccounts dict
             primaryAccount = account
-            # set the primary account to whatever the current tag is on
-
         if primaryAccount in donationDict:
-        # if the primary account is in donationDict
             donationInfo = donationDict[primaryAccount]
-            # set donationInfo to the data inside the donationDict primaryAccount (will be donations, and player name)
         else:
-        # if the primaryAccount is not in donationDict
             donationInfo = [0, item['name']]
-            # set the donation info to 0 donated, and the name of the player
         donationInfo[0] += item["donations"]
-        # add the donations of the current account onto the donationInfo array
         donationDict[primaryAccount] = donationInfo
-        # update the dict with the new donationInfo
 
     for i in donationDict:
         donationString += (donationDict[i][1])
         if i in altAccounts.values():
-            donationString += (" *(Alt account(s) included)*")
+            donationString += (" **(Alts)**")
         donationString += (": " + str(donationDict[i][0]) + "\n")
-
-    print(donationDict)
 
     return donationString
 
