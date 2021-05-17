@@ -64,7 +64,7 @@ async def on_message(message):
             person = message.content
             person = person.replace("!insult ", "")
             if 'bender' in person.lower() or 'bot' in person.lower():
-                person = "You cannot insult me you fool!"
+                person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
             else:
                 print("Insulted " + person)
