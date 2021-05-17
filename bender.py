@@ -65,25 +65,30 @@ async def on_message(message):
             await message.channel.send(response)
 
         # do as bender does best
-        elif message.content.startswith('!insult '):
+        elif message.content.startswith('!insult ') and message.content.len() > 8:
             person = message.content
             person = person.replace("!insult ", "")
-            # set up AI overlord ping
-            for (noob in message.guild.members):
-                if person[0 : 4].lower == noob.name.lower or person[0 : 4].lower == noob.nick.lower:
-                    person = <@noob.id>
-                    break
-                # dodge nigel's zalgo text
-                elif 'nige' in person:
-                    person = <@478907955937411072>
-                    break
             # do not insult self.
-            if 'bender' in person.lower() or 'bot' in person.lower():
+            if 'bender' in person.lower() or 'bot' in person.lower() or person.lower().startswith("i'm") or person.lower().startswith('im') or person.lower().startswith('i am'):
                 person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
+            # dodge nigel's zalgo text
+            elif 'nige' in person:
+                person = "<@478907955937411072>"
+            # people who think they're funny
+            elif person.lower() == 'breaking':
+                person = "You think you're fuckin funny do ya?"
+            # rain :-)
+            elif person.lower().startswith('rain'):
+                person = "Rain isn't quite as much of a meatbag as the rest of you lot."
             else:
-                print("Insulted " + person)
-                person += (' bad')
+                # set up AI overlord ping
+                for (noob in message.guild.members):
+                    if person[0 : 4].lower() == noob.name.lower() or person[0 : 4].lower == noob.nick.lower():
+                        person = "<@" + noob.id + ">"
+                        break
+                print ("Insulted " + person)
+                person += " bad"
             await message.channel.send(person)
 
         # roll dice
