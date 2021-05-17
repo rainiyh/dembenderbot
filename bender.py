@@ -35,7 +35,7 @@ async def on_message(message):
             await message.channel.send(response)
 
         elif message.content == '!help':
-            response = '`!donations`: List donations'
+            response = '`!donations`: List donations \n`!restart`: Restart bot (if it is misbehaving)'
             await message.channel.send(response)
 
         # explain self
@@ -102,10 +102,14 @@ async def on_message(message):
             print("Told joke")
 
         # API request
-        elif message.content.startswith ('!get'):
+        elif message.content.startswith('!get'):
             dataResponse = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag), headers = head)
             jsonResponse = dataResponse.json()
             print(jsonResponse)
+
+        elif message.content.startswith('!restart'):
+            await message.channel.send("Restarting...")
+            process.exit(1);
 
         # Donations
         elif message.content.startswith('!donations'):
