@@ -21,6 +21,7 @@ clashApiUrl = 'https://api.clashofclans.com/v1/clans/'
 headers = {'content-type': 'application/json'}
 head = {'Authorization': 'Bearer {}'.format(clashApiToken)}
 devs = [143430791651655680, 390512772829544448, 478907955937411072]
+        # Rain              # Ethan             #Nigel
 
 # display success message on connection
 @bot.event
@@ -64,9 +65,18 @@ async def on_message(message):
             await message.channel.send(response)
 
         # do as bender does best
-        elif '!insult ' in message.content:
+        elif message.content.startswith('!insult '):
             person = message.content
             person = person.replace("!insult ", "")
+            # set up AI overlord ping
+            for (noob in message.guild.members):
+                if person[0 : 4] = noob.name or person[0 : 4] = noob.nick:
+                    person = <@noob.id>
+                    break
+                # dodge nigel's zalgo text
+                elif 'nige' in person:
+                    person = <@478907955937411072>
+                    break
             # do not insult self.
             if 'bender' in person.lower() or 'bot' in person.lower():
                 person = "Bite my shiny metal ass."
