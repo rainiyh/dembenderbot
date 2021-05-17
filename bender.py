@@ -70,7 +70,7 @@ async def on_message(message):
             person = person.replace("!insult ", "")
             # set up AI overlord ping
             for (noob in message.guild.members):
-                if person[0 : 4] = noob.name or person[0 : 4] = noob.nick:
+                if person[0 : 4].lower == noob.name.lower or person[0 : 4].lower == noob.nick.lower:
                     person = <@noob.id>
                     break
                 # dodge nigel's zalgo text
