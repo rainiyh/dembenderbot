@@ -21,7 +21,6 @@ clashApiUrl = 'https://api.clashofclans.com/v1/clans/'
 headers = {'content-type': 'application/json'}
 head = {'Authorization': 'Bearer {}'.format(clashApiToken)}
 
-
 # display success message on connection
 @bot.event
 async def on_ready():
@@ -61,6 +60,17 @@ async def on_message(message):
                 response = 'tails'
             await message.channel.send(response)
 
+        elif '!insult ' in message.content:
+            person = message.content
+            person = person.replace("!insult ", "")
+            if 'bender' in person.lower() or 'bot' in person.lower():
+                person = "You cannot insult me you fool!"
+                print("Someone tried to insult bot, but failed :-)")
+            else:
+                print("Insulted " + person)
+                person += (' bad')
+            await message.channel.send(person)
+
         # roll dice
         elif message.content.startswith('!roll'):
             roll = re.search('(\d+)?d(\d+)', message.content)
@@ -89,6 +99,7 @@ async def on_message(message):
             else:
                 jokeStr += jokeJson['joke'] + "\n"
             await message.channel.send(jokeStr)
+            print("Told joke")
 
         # API request
         elif message.content.startswith ('!get'):
@@ -102,9 +113,8 @@ async def on_message(message):
             await message.channel.send(donations)
             print("Listed Donations")
 
-        elif message.content.startswith('!'):
+        elif message.content.startswith('! '):
             await message.channel.send("Unknown command. `!help` for commands.")
-
 
 # Donations function
 def donationStatsHandling():
