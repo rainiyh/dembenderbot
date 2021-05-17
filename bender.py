@@ -127,10 +127,6 @@ async def on_message(message):
             jsonResponse = dataResponse.json()
             print(jsonResponse)
 
-        elif message.content.startswith('!restart'):
-            await message.channel.send("Restarting...")
-            process.exit(1);
-
         # Donations
         elif message.content.startswith('!donations'):
             donations = donationStatsHandling()
