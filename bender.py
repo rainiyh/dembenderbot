@@ -37,7 +37,7 @@ async def on_message(message):
 
         # give assistance (very un-bender-like)
         elif message.content == '!help':
-            response = '`!donations`: List donations'
+            response = '`!donations`: List donations \n`!restart`: Restart bot (if it is misbehaving)'
             await message.channel.send(response)
 
         # explain self
@@ -107,13 +107,17 @@ async def on_message(message):
             print("Told joke")
 
         # API request (developer use only)
-        elif message.content.startswith ('!get'):
+        elif message.content.startswith('!get') and message.author.id in devs:
             dataResponse = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag), headers = head)
             jsonResponse = dataResponse.json()
             print(jsonResponse)
 
+        elif message.content.startswith('!restart'):
+            await message.channel.send("Restarting...")
+            process.exit(1);
+
         # Donations
-        elif message.content.startswith('!donations') and message.author.id in devs:
+        elif message.content.startswith('!donations'):
             donations = donationStatsHandling()
             await message.channel.send(donations)
             print("Listed Donations")
