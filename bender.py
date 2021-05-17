@@ -20,6 +20,8 @@ clantag2 = '#2L89YYJLC' # clan dem #2 tag
 clashApiUrl = 'https://api.clashofclans.com/v1/clans/'
 headers = {'content-type': 'application/json'}
 head = {'Authorization': 'Bearer {}'.format(clashApiToken)}
+devs = [143430791651655680, 390512772829544448, 478907955937411072]
+        # Rain              # Ethan             #Nigel
 
 # display success message on connection
 @bot.event
@@ -34,6 +36,7 @@ async def on_message(message):
             response = 'Bite my shiny metal ass.'
             await message.channel.send(response)
 
+        # give assistance (very un-bender-like)
         elif message.content == '!help':
             response = '`!donations`: List donations \n`!restart`: Restart bot (if it is misbehaving)'
             await message.channel.send(response)
@@ -48,6 +51,7 @@ async def on_message(message):
             response = 'Ok, staller'
             await message.channel.send(response)
 
+        # call out bad syntax
         elif 'git gud' in message.content:
             response = "`git: 'gud' is not a git command. See 'git --help'.`"
             await message.channel.send(response)
@@ -60,9 +64,20 @@ async def on_message(message):
                 response = 'tails'
             await message.channel.send(response)
 
-        elif '!insult ' in message.content:
+        # do as bender does best
+        elif message.content.startswith('!insult '):
             person = message.content
             person = person.replace("!insult ", "")
+            # set up AI overlord ping
+            for (noob in message.guild.members):
+                if person[0 : 4].lower == noob.name.lower or person[0 : 4].lower == noob.nick.lower:
+                    person = <@noob.id>
+                    break
+                # dodge nigel's zalgo text
+                elif 'nige' in person:
+                    person = <@478907955937411072>
+                    break
+            # do not insult self.
             if 'bender' in person.lower() or 'bot' in person.lower():
                 person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
@@ -101,8 +116,8 @@ async def on_message(message):
             await message.channel.send(jokeStr)
             print("Told joke")
 
-        # API request
-        elif message.content.startswith('!get'):
+        # API request (developer use only)
+        elif message.content.startswith('!get') and message.author.id in devs:
             dataResponse = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag), headers = head)
             jsonResponse = dataResponse.json()
             print(jsonResponse)
@@ -113,11 +128,13 @@ async def on_message(message):
             await message.channel.send(donations)
             print("Listed Donations")
 
+        # Bender couldn't be bothered.
         elif message.content.startswith('! '):
             await message.channel.send("Unknown command. `!help` for commands.")
 
 # Donations function
 def donationStatsHandling():
+    # Get data from API
     playerData = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag) + '/members', headers = head).json()
     playerDataCD2 = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag2) + '/members', headers = head).json()
     playerData['items'].extend(playerDataCD2['items'])
@@ -153,6 +170,7 @@ def donationStatsHandling():
     donationString = '**Donations:**\n'
     donationDict = {}
 
+    # Check if given player is in the list, if it's an alt, add it to main account instead of separately displaying
     for item in playerData['items']:
         account = item['tag']
         if account in altAccounts:
@@ -166,6 +184,7 @@ def donationStatsHandling():
         donationInfo[0] += item["donations"]
         donationDict[primaryAccount] = donationInfo
 
+    # Assemble string
     for i in donationDict:
         donationString += (donationDict[i][1])
         if i in altAccounts.values():
