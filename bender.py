@@ -65,17 +65,17 @@ async def on_message(message):
             await message.channel.send(response)
 
         # do as bender does best
-        elif message.content.startswith('!insult '):
+        elif message.content.startswith('!insult ') and message.content.len() > 8:
             person = message.content
             person = person.replace("!insult ", "")
             # set up AI overlord ping
-            for (noob in message.guild.members):
-                if person[0 : 4].lower == noob.name.lower or person[0 : 4].lower == noob.nick.lower:
-                    person = <@noob.id>
+            for noob in message.guild.members:
+                if person[0 : 4].lower() == noob.name.lower() or person[0 : 4].lower() == noob.nick.lower():
+                    person = '<@' + noob.id + '>'
                     break
                 # dodge nigel's zalgo text
                 elif 'nige' in person:
-                    person = <@478907955937411072>
+                    person = '<@' + 478907955937411072 + '>'
                     break
             # do not insult self.
             if 'bender' in person.lower() or 'bot' in person.lower():
