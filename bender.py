@@ -69,7 +69,7 @@ async def on_message(message):
             person = message.content
             person = person.replace("!insult ", "")
             # do not insult self.
-            if in_pare('bender', person) or 'bot' in person.lower() or compare(person, 'im', 2) or person.lower().startswith('i am') or person.lower().startswith('bend'):
+            if in_pare('bender', person) or 'bot' in person.lower() or compare(person, 'im', 2) or person.lower().startswith('i am') or person.lower().startswith('bend') or person.lower() == 'me':
                 person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
             # dodge nigel's zalgo text
