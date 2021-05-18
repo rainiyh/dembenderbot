@@ -86,12 +86,7 @@ async def on_message(message):
                 person = "<@671078867754287115>"
             else:
                 #set up AI overlord ping
-                intents = discord.Intents.default()
-                intents.members = True
-                client = discord.Client(intents=intents)
-                for guild in client.guilds:
-                    for member in guild.members:
-                        print(member.name)
+
                 #for member in guild.members:
                     #print(member.id)
                     #for noob in message.guild.members:
@@ -121,16 +116,25 @@ async def on_message(message):
         # tell a joke
         elif message.content.startswith('!joke'):
             jokeStr = ""
-            jokeJson = requests.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit').json()
-            jokeJson = json.dumps(jokeJson)
-            jokeJson = json.loads(jokeJson)
+            jokeJson = requests.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit')
+            if '[200]' in str(jokeJson):
+                jokeJson = jokeJson.json()
+                testJokeJson = json.dumps(jokeJson)
+                if len(testJokeJson) <= 1:
+                    jokeStr = "Your Mother!"
+                else:
+                    jokeJson = json.dumps(jokeJson)
+                    jokeJson = json.loads(jokeJson)
 
-            if jokeJson['type'] == 'twopart':
-                jokeStr += jokeJson['setup'] + "\n" + jokeJson['delivery'] + '\n'
+                    if jokeJson['type'] == 'twopart':
+                        jokeStr += jokeJson['setup'] + "\n" + jokeJson['delivery'] + '\n'
+                    else:
+                        jokeStr += jokeJson['joke'] + "\n"
+                    print("Told joke")
             else:
-                jokeStr += jokeJson['joke'] + "\n"
+                jokeStr = "Your Mother!"
             await message.channel.send(jokeStr)
-            print("Told joke")
+
 
         # API request (developer use only)
         elif message.content.startswith('!get') and message.author.id in devs:
@@ -208,32 +212,32 @@ def donationStatsHandling():
         donationString += (": " + str(donationDict[i][0]) + "\n")
 
     return donationString
-    
+
 # Compare string letters only. 0 in count means compare entire string.
 def compare(str1, str2, count):
     # Remove non alphabetic characters
     regex = re.compile('[^a-z]')
     str1alpha = regex.sub('', str1.lower())
     str2alpha = regex.sub('', str2.lower())
-    
+
     # Compare and return
     if count <= 0:
         return str1 == str2
     else:
         equal = True
-        for (i in range(count)):
+        for i in range(count):
             if str1alpha[i] != str2alpha[i]:
                 equal = False
         return equal
 
-# in, but only the alphabetics and ignore case        
+# in, but only the alphabetics and ignore case
 def in_pare(str1, str2):
     # Remove non alphabetic characters
     regex = re.compile('[^a-z]')
     str1alpha = regex.sub('', str1.lower())
     str2alpha = regex.sub('', str2.lower())
-    
+
     # in
     return str1alpha in str2alpha
-    
+
 bot.run(TOKEN)
