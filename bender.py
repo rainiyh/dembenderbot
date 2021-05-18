@@ -33,12 +33,12 @@ async def on_ready():
 async def on_message(message):
     if not message.author.bot:
         # defend self
-        if 'bot sucks' in message.content or 'bot sux' in message.content or 'bender, you suck' in message.content or 'you, bender' in message.content or 'you bender' in message.content:
+        if in_pare('bot sucks', message.content) or in_pare('bot sux', message.content) or in_pare('bender, you suck', message.content) or in_pare('you, bender', message.content):
             response = 'Bite my shiny metal ass.'
             await message.channel.send(response)
 
         # give assistance (very un-bender-like)
-        elif message.content == '!help':
+        elif message.content.startswith('!help'):
             response = '`!donations`: List donations \n`!restart`: Restart bot (if it is misbehaving)'
             await message.channel.send(response)
 
@@ -48,7 +48,7 @@ async def on_message(message):
             await message.channel.send(response)
 
         # call out stallers
-        elif 'not stall' in message.content or "i didn't stall" in message.content.lower() or 'i didnt stall' in message.content.lower():
+        elif in_pare('not stall', message.content) or in_pare("i didnt stall", message.content):
             response = 'Ok, staller'
             await message.channel.send(response)
 
@@ -58,7 +58,7 @@ async def on_message(message):
             await message.channel.send(response)
 
         # toss coin
-        elif message.content == 'toss a coin':
+        elif message.content == '!toss':
             if (random.randint(0, 1) == 1):
                 response = 'heads'
             else:
@@ -70,17 +70,17 @@ async def on_message(message):
             person = message.content
             person = person.replace("!insult ", "")
             # do not insult self.
-            if 'bender' in person.lower() or 'bot' in person.lower() or person.lower().startswith("i'm") or person.lower().startswith('im') or person.lower().startswith('i am'):
+            if in_pare('bender', person) or 'bot' in person.lower() or compare(person, 'im', 2) or person.lower().startswith('i am') or person.lower().startswith('bend') or person.lower() == 'me':
                 person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
             # dodge nigel's zalgo text
-            elif 'nige' in person:
+            elif in_pare('nige', person):
                 person = "<@478907955937411072> bad"
             # people who think they're funny
             elif person.lower() == 'breaking':
                 person = "You think you're fuckin funny do ya?"
             # rain :-)
-            elif person.lower().startswith('rain'):
+            elif compare(person, 'rain', 4):
                 person = "Rain isn't quite as much of a meatbag as the rest of you lot."
             elif 'taran' in person.lower():
                 person = "<@671078867754287115>"
@@ -208,5 +208,32 @@ def donationStatsHandling():
         donationString += (": " + str(donationDict[i][0]) + "\n")
 
     return donationString
+    
+# Compare string letters only. 0 in count means compare entire string.
+def compare(str1, str2, count):
+    # Remove non alphabetic characters
+    regex = re.compile('[^a-z]')
+    str1alpha = regex.sub('', str1.lower())
+    str2alpha = regex.sub('', str2.lower())
+    
+    # Compare and return
+    if count == 0:
+        return str1 == str2
+    else:
+        equal = True
+        for (i in range(count)):
+            if str1alpha[i] != str2alpha[i]:
+                equal = False
+        return equal
 
+# in, but only the alphabetics and ignore case        
+def in_pare(str1, str2):
+    # Remove non alphabetic characters
+    regex = re.compile('[^a-z]')
+    str1alpha = regex.sub('', str1.lower())
+    str2alpha = regex.sub('', str2.lower())
+    
+    # in
+    return str1alpha in str2alpha
+    
 bot.run(TOKEN)
