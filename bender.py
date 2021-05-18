@@ -211,7 +211,7 @@ def compare(str1, str2, count):
     str2alpha = regex.sub('', str2.lower())
     
     # Compare and return
-    if count == 0:
+    if count <= 0:
         return str1 == str2
     else:
         equal = True
