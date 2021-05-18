@@ -1,5 +1,6 @@
 # bender.py
 import os
+import discord
 from discord.ext import commands
 import random
 import re
@@ -81,17 +82,22 @@ async def on_message(message):
             # rain :-)
             elif person.lower().startswith('rain'):
                 person = "Rain isn't quite as much of a meatbag as the rest of you lot."
+            elif 'taran' in person.lower():
+                person = "<@671078867754287115>"
             else:
-                # set up AI overlord ping
+                #set up AI overlord ping
+                intents = discord.Intents.default()
+                intents.members = True
+                client = discord.Client(intents=intents)
+                for guild in client.guilds:
+                    for member in guild.members:
+                        print(member.name)
                 #for member in guild.members:
                     #print(member.id)
-                #for noob in message.guild.members:
-                    #if (noob.name is not None and person[0 : 4].lower() == noob.name.lower()) or (noob.nick is not None and person[0 : 4].lower() == noob.nick.lower()):
-                        #person = "<@" + noob.id + ">"
-                        #break
-                if 'taran' in person:
-                    person = "<@671078867754287115>"
-
+                    #for noob in message.guild.members:
+                        #if (noob.name is not None and person[0 : 4].lower() == noob.name.lower()) or (noob.nick is not None and person[0 : 4].lower() == noob.nick.lower()):
+                            #person = "<@" + noob.id + ">"
+                            #break
                 print ("Insulted " + person)
                 person += " bad"
             await message.channel.send(person)
