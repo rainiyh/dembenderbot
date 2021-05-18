@@ -83,11 +83,15 @@ async def on_message(message):
                 person = "Rain isn't quite as much of a meatbag as the rest of you lot."
             else:
                 # set up AI overlord ping
-                print(message.guild.members)
-                for noob in message.guild.members:
-                    if (noob.name is not None and person[0 : 4].lower() == noob.name.lower()) or (noob.nick is not None and person[0 : 4].lower() == noob.nick.lower()):
-                        person = "<@" + noob.id + ">"
-                        break
+                #for member in guild.members:
+                    #print(member.id)
+                #for noob in message.guild.members:
+                    #if (noob.name is not None and person[0 : 4].lower() == noob.name.lower()) or (noob.nick is not None and person[0 : 4].lower() == noob.nick.lower()):
+                        #person = "<@" + noob.id + ">"
+                        #break
+                if 'taran' in person:
+                    person = "<@671078867754287115>"
+
                 print ("Insulted " + person)
                 person += " bad"
             await message.channel.send(person)
