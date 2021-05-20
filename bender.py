@@ -1,5 +1,6 @@
 # bender.py
 import os
+from os import path
 import discord
 from discord.ext import commands
 import random
@@ -9,6 +10,7 @@ import json
 import urllib.parse
 from dotenv import load_dotenv
 import json
+from threading import Timer
 
 load_dotenv()
 
@@ -24,6 +26,22 @@ head = {'Authorization': 'Bearer {}'.format(clashApiToken)}
 devs = [143430791651655680, 390512772829544448, 478907955937411072]
         # Rain              # Ethan             #Nigel
 
+
+@bot.command(pass_context=True)
+async def getuser(ctx, role: discord.Role):
+    role = discord.utils.get(ctx.message.server.roles, name="mod")
+    if role is None:
+        await bot.say('There is no "mod" role on this server!')
+        return
+    empty = True
+    for member in ctx.message.server.members:
+        if role in member.roles:
+            await bot.say("{0.name}: {0.id}".format(member))
+            empty = False
+    if empty:
+        await bot.say("Nobody has the role {}".format(role.mention))
+
+
 # display success message on connection
 @bot.event
 async def on_ready():
@@ -32,6 +50,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if not message.author.bot:
+
         # defend self
         if in_pare('bot sucks', message.content) or in_pare('bot sux', message.content) or in_pare('bender, you suck', message.content) or in_pare('you, bender', message.content):
             response = 'Bite my shiny metal ass.'
@@ -82,11 +101,13 @@ async def on_message(message):
             # rain :-)
             elif compare(person, 'rain', 4):
                 person = "Rain isn't quite as much of a meatbag as the rest of you lot."
+            elif compare(person, 'ethan', 5):
+                person = "Nice try."
             elif 'taran' in person.lower():
-                person = "<@671078867754287115>"
+                person = "<@671078867754287115> bad"
             else:
                 #set up AI overlord ping
-
+                print(str(message))
                 #for member in guild.members:
                     #print(member.id)
                     #for noob in message.guild.members:
@@ -137,7 +158,7 @@ async def on_message(message):
 
 
         # API request (developer use only)
-        elif message.content.startswith('!get') and message.author.id in devs:
+        elif message.content == '!get' and message.author.id in devs:
             dataResponse = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag), headers = head)
             jsonResponse = dataResponse.json()
             print(jsonResponse)
@@ -211,7 +232,25 @@ def donationStatsHandling():
             donationString += (" **(Alts)**")
         donationString += (": " + str(donationDict[i][0]) + "\n")
 
+    #if path.exists("donations.txt") == False:
+    #    open('donations.txt', 'w')
+    #else:
+    #    donationsTextJson = json.load(open('donations.txt'))
+    #    if len(donationsTextJson) > len(donationDict):
+    #        biggestLen = donationsTextJson
+    #    elif len(donationsTextJson) < len(donationDict):
+    #        biggestLen = donationDict
+    #    else:
+    #        biggestLen = donationDict
+    #    for keys in biggestLen:
+    #        if donationDict[keys][0] < donationsTextJson[keys][0]:
+    #            donationsTextJson[keys][0] = donationDict[keys][0]
+
+    donationsTextJson = open('donations.txt', 'w')
+
     return donationString
+
+timeElapsed = Timer(1800, donationStatsHandling())
 
 # Compare string letters only. 0 in count means compare entire string.
 def compare(str1, str2, count):
