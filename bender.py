@@ -1,5 +1,6 @@
 # bender.py
 import os
+from os import path
 import discord
 from discord.ext import commands
 import random
@@ -9,6 +10,7 @@ import json
 import urllib.parse
 from dotenv import load_dotenv
 import json
+from threading import Timer
 
 load_dotenv()
 
@@ -24,6 +26,22 @@ head = {'Authorization': 'Bearer {}'.format(clashApiToken)}
 devs = [143430791651655680, 390512772829544448, 478907955937411072]
         # Rain              # Ethan             #Nigel
 
+
+@bot.command(pass_context=True)
+async def getuser(ctx, role: discord.Role):
+    role = discord.utils.get(ctx.message.server.roles, name="mod")
+    if role is None:
+        await bot.say('There is no "mod" role on this server!')
+        return
+    empty = True
+    for member in ctx.message.server.members:
+        if role in member.roles:
+            await bot.say("{0.name}: {0.id}".format(member))
+            empty = False
+    if empty:
+        await bot.say("Nobody has the role {}".format(role.mention))
+
+
 # display success message on connection
 @bot.event
 async def on_ready():
@@ -32,6 +50,7 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     if not message.author.bot:
+
         # defend self
         if in_pare('bot sucks', message.content) or in_pare('bot sux', message.content) or in_pare('bender, you suck', message.content) or in_pare('you, bender', message.content):
             response = 'Bite my shiny metal ass.'
@@ -82,16 +101,13 @@ async def on_message(message):
             # rain :-)
             elif compare(person, 'rain', 4):
                 person = "Rain isn't quite as much of a meatbag as the rest of you lot."
+            elif compare(person, 'ethan', 5):
+                person = "Nice try."
             elif 'taran' in person.lower():
-                person = "<@671078867754287115>"
+                person = "<@671078867754287115> bad"
             else:
                 #set up AI overlord ping
-                intents = discord.Intents.default()
-                intents.members = True
-                client = discord.Client(intents=intents)
-                for guild in client.guilds:
-                    for member in guild.members:
-                        print(member.name)
+                print(str(message))
                 #for member in guild.members:
                     #print(member.id)
                     #for noob in message.guild.members:
@@ -125,19 +141,28 @@ async def on_message(message):
         # tell a joke
         elif message.content.startswith('!joke'):
             jokeStr = ""
-            jokeJson = requests.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit').json()
-            jokeJson = json.dumps(jokeJson)
-            jokeJson = json.loads(jokeJson)
+            jokeJson = requests.get('https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit')
+            if '[200]' in str(jokeJson):
+                jokeJson = jokeJson.json()
+                testJokeJson = json.dumps(jokeJson)
+                if len(testJokeJson) <= 1:
+                    jokeStr = "Your Mother!"
+                else:
+                    jokeJson = json.dumps(jokeJson)
+                    jokeJson = json.loads(jokeJson)
 
-            if jokeJson['type'] == 'twopart':
-                jokeStr += jokeJson['setup'] + "\n" + jokeJson['delivery'] + '\n'
+                    if jokeJson['type'] == 'twopart':
+                        jokeStr += jokeJson['setup'] + "\n" + jokeJson['delivery'] + '\n'
+                    else:
+                        jokeStr += jokeJson['joke'] + "\n"
+                    print("Told joke")
             else:
-                jokeStr += jokeJson['joke'] + "\n"
+                jokeStr = "Your Mother!"
             await message.channel.send(jokeStr)
-            print("Told joke")
+
 
         # API request (developer use only)
-        elif message.content.startswith('!get') and message.author.id in devs:
+        elif message.content == '!get' and message.author.id in devs:
             dataResponse = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag), headers = head)
             jsonResponse = dataResponse.json()
             print(jsonResponse)
@@ -217,33 +242,51 @@ def donationStatsHandling():
             donationString += (" **(Alts)**")
         donationString += (": " + str(donationDict[i][0]) + "\n")
 
+    #if path.exists("donations.txt") == False:
+    #    open('donations.txt', 'w')
+    #else:
+    #    donationsTextJson = json.load(open('donations.txt'))
+    #    if len(donationsTextJson) > len(donationDict):
+    #        biggestLen = donationsTextJson
+    #    elif len(donationsTextJson) < len(donationDict):
+    #        biggestLen = donationDict
+    #    else:
+    #        biggestLen = donationDict
+    #    for keys in biggestLen:
+    #        if donationDict[keys][0] < donationsTextJson[keys][0]:
+    #            donationsTextJson[keys][0] = donationDict[keys][0]
+
+    donationsTextJson = open('donations.txt', 'w')
+
     return donationString
-    
+
+timeElapsed = Timer(1800, donationStatsHandling())
+
 # Compare string letters only. 0 in count means compare entire string.
 def compare(str1, str2, count):
     # Remove non alphabetic characters
     regex = re.compile('[^a-z]')
     str1alpha = regex.sub('', str1.lower())
     str2alpha = regex.sub('', str2.lower())
-    
+
     # Compare and return
     if count <= 0:
         return str1 == str2
     else:
         equal = True
-        for (i in range(count)):
+        for i in range(count):
             if str1alpha[i] != str2alpha[i]:
                 equal = False
         return equal
 
-# in, but only the alphabetics and ignore case        
+# in, but only the alphabetics and ignore case
 def in_pare(str1, str2):
     # Remove non alphabetic characters
     regex = re.compile('[^a-z]')
     str1alpha = regex.sub('', str1.lower())
     str2alpha = regex.sub('', str2.lower())
-    
+
     # in
     return str1alpha in str2alpha
-    
+
 bot.run(TOKEN)
