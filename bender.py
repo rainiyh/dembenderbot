@@ -98,6 +98,8 @@ async def on_message(message):
             # rain :-)
             elif compare(person, 'rain', 4):
                 person = "Rain isn't quite as much of a meatbag as the rest of you lot."
+            elif compare(person, 'r4in', 3) or compare(person, 'ra1n', 3) or compare(person, 'r41n', 2):
+                person = "You think you're funny with your leet? I've been doing this since before you were born."
             elif compare(person, 'ethan', 5):
                 person = "Nice try."
             elif compare(person, 'dar', 3):
@@ -123,8 +125,12 @@ async def on_message(message):
             if (roll):
                 p = re.compile('\d+')
                 parsedNumbers = p.findall(roll.group())
-                numDice = int(parsedNumbers[0])
-                diceType = int(parsedNumbers[1])
+                if len(parsedNumbers) == 1:
+                    numDice = 1
+                    diceType = int(parsedNumbers[0])
+                else:
+                    numDice = int(parsedNumbers[0])
+                    diceType = int(parsedNumbers[1])
                 sum = 0
                 for i in range(0, numDice):
                     sum += random.randint(1, diceType)
@@ -166,17 +172,32 @@ async def on_message(message):
         elif message.content.startswith('!donations'):
             donations = donationStatsHandling()
             await message.channel.send(donations)
+            print("Listed Donations")
+
+        # General
+        elif message.content.startswith('!chatname '):
+            newname = message.content.replace('!chatname ', '')
+            channel = next((x for x in message.guild.channels if x.id == 718632198974210141), None)
+            regex = re.compile('[^a-z]')
+            newname = regex.sub('', newname.lower())
+            print(channel)
+            await channel.edit(name=newname)
+
+        elif message.content.startswith('!chattest '):
+            channel = next((x for x in message.guild.channels if x.id == 718632198974210141), None)
+            await channel.edit(name='bender')
 
         # Bender couldn't be bothered.
         elif message.content.startswith('!'):
             await message.channel.send("Unknown command. `!help` for commands.")
 
 # Donations function
+# TODO: whatever this 'items' thing is.
 def donationStatsHandling():
     # Get data from API
     playerData = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag) + '/members', headers = head).json()
     playerDataCD2 = requests.get(clashApiUrl + urllib.parse.quote_plus(clantag2) + '/members', headers = head).json()
-    playerData['items'].extend(playerDataCD2['items'])
+    # playerData['items'].extend(playerDataCD2['items'])
 
     # Currently all Alt accounts need to be added in manually
     #                 money        jabu          hurty          jabu
@@ -210,18 +231,18 @@ def donationStatsHandling():
     donationDict = {}
 
     # Check if given player is in the list, if it's an alt, add it to main account instead of separately displaying
-    for item in playerData['items']:
-        account = item['tag']
-        if account in altAccounts:
-            primaryAccount = altAccounts[account]
-        else:
-            primaryAccount = account
-        if primaryAccount in donationDict:
-            donationInfo = donationDict[primaryAccount]
-        else:
-            donationInfo = [0, item['name']]
-        donationInfo[0] += item["donations"]
-        donationDict[primaryAccount] = donationInfo
+    #for item in playerData['items']:
+    #    account = item['tag']
+    #    if account in altAccounts:
+    #        primaryAccount = altAccounts[account]
+    #    else:
+    #        primaryAccount = account
+    #    if primaryAccount in donationDict:
+    #        donationInfo = donationDict[primaryAccount]
+    #    else:
+    #        donationInfo = [0, item['name']]
+    #    donationInfo[0] += item["donations"]
+    #    donationDict[primaryAccount] = donationInfo
 
     #if path.exists("donations.json") == False:
     #    donationsTextJson = open('donations.json', 'w')
@@ -259,12 +280,16 @@ def compare(str1, str2, count):
     # Compare and return
     if count <= 0:
         return str1 == str2
-    else:
-        equal = True
-        for i in range(count):
+    if len(str1) < count or len(str2) < count:
+        count = max(len(str1),len(str2))
+    equal = True
+    for i in range(count):
+        if i < len(str1alpha) and i < len(str2alpha):
             if str1alpha[i] != str2alpha[i]:
                 equal = False
-        return equal
+        else:
+            equal = False
+    return equal
 
 # in, but only the alphabetics and ignore case
 def in_pare(str1, str2):
