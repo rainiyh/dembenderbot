@@ -108,8 +108,12 @@ async def on_message(message):
             if (roll):
                 p = re.compile('\d+')
                 parsedNumbers = p.findall(roll.group())
-                numDice = int(parsedNumbers[0])
-                diceType = int(parsedNumbers[1])
+                if len(parsedNumbers) == 1:
+                    numDice = 1
+                    diceType = int(parsedNumbers[0])
+                else:
+                    numDice = int(parsedNumbers[0])
+                    diceType = int(parsedNumbers[1])
                 sum = 0
                 for i in range(0, numDice):
                     sum += random.randint(1, diceType)
@@ -143,6 +147,12 @@ async def on_message(message):
             donations = donationStatsHandling()
             await message.channel.send(donations)
             print("Listed Donations")
+            
+        # General
+        elif message.content.startswith('!chatname '):
+            newname = message.content.replace('!chatname ', '')
+            channel = next((x for x in message.guild.channels if x.id == 718632198974210141), None)
+            await channel.edit(name = newname)
 
         # Bender couldn't be bothered.
         elif message.content.startswith('! '):
