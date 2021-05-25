@@ -89,6 +89,8 @@ async def on_message(message):
             if in_pare('bender', person) or 'bot' in person.lower() or compare(person, 'im', 2) or person.lower().startswith('i am') or person.lower().startswith('bend') or person.lower() == 'me' or person.lower().startswith('myself'):
                 person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
+            elif "everyone" in person.lower():
+                person = "meatbags bad"
             # dodge nigel's zalgo text
             elif in_pare('nige', person):
                 person = "<@478907955937411072> bad"
