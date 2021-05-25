@@ -178,14 +178,13 @@ async def on_message(message):
         elif message.content.startswith('!chatname '):
             newname = message.content.replace('!chatname ', '')
             channel = next((x for x in message.guild.channels if x.id == 718632198974210141), None)
-            regex = re.compile('[^a-z]')
+            regex = re.compile('[^a-z ]')
             newname = regex.sub('', newname.lower())
-            print(channel)
+            print(newname)
             await channel.edit(name=newname)
 
-        elif message.content.startswith('!chattest '):
-            channel = next((x for x in message.guild.channels if x.id == 718632198974210141), None)
-            await channel.edit(name='bender')
+        elif message.content.startswith('!kill') and message.author.id in devs:
+            quit()
 
         # Bender couldn't be bothered.
         elif message.content.startswith('!'):
