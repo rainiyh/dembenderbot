@@ -11,7 +11,6 @@ import json
 import urllib.parse
 from dotenv import load_dotenv
 import json
-from threading import Timer
 
 load_dotenv()
 
@@ -27,7 +26,6 @@ head = {'Authorization': 'Bearer {}'.format(clashApiToken)}
 devs = [143430791651655680, 390512772829544448, 478907955937411072]
         # Rain              # Ethan             #Nigel
 
-
 @bot.command(pass_context=True)
 async def getuser(ctx, role: discord.Role):
     role = discord.utils.get(ctx.message.server.roles, name="mod")
@@ -41,7 +39,6 @@ async def getuser(ctx, role: discord.Role):
             empty = False
     if empty:
         await bot.say("Nobody has the role {}".format(role.mention))
-
 
 # display success message on connection
 @bot.event
@@ -90,9 +87,11 @@ async def on_message(message):
             person = message.content
             person = person.replace("!insult ", "")
             # do not insult self.
-            if in_pare('bender', person) or 'bot' in person.lower() or compare(person, 'im', 2) or person.lower().startswith('i am') or person.lower().startswith('bend') or person.lower() == 'me':
+            if in_pare('bender', person) or 'bot' in person.lower() or compare(person, 'im', 2) or person.lower().startswith('i am') or person.lower().startswith('bend') or person.lower() == 'me' or person.lower().startswith('myself'):
                 person = "Bite my shiny metal ass."
                 print("Someone tried to insult bot, but failed :-)")
+            elif "everyone" in person.lower():
+                person = "meatbags bad"
             # dodge nigel's zalgo text
             elif in_pare('nige', person):
                 person = "<@478907955937411072> bad"
@@ -106,6 +105,8 @@ async def on_message(message):
                 person = "You think you're funny with your leet? I've been doing this since before you were born."
             elif compare(person, 'ethan', 5):
                 person = "Nice try."
+            elif compare(person, 'dar', 3):
+                person = person + " good."
             elif 'taran' in person.lower():
                 person = "<@671078867754287115> bad"
             else:
@@ -174,7 +175,7 @@ async def on_message(message):
             donations = donationStatsHandling()
             await message.channel.send(donations)
             print("Listed Donations")
-            
+
         # General
         elif message.content.startswith('!chatname '):
             newname = message.content.replace('!chatname ', '')
@@ -183,7 +184,7 @@ async def on_message(message):
             newname = regex.sub('', newname.lower())
             print(newname)
             await channel.edit(name=newname)
-            
+
         elif message.content.startswith('!kill') and message.author.id in devs:
             quit()
         
@@ -191,7 +192,7 @@ async def on_message(message):
             os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
         
         # Bender couldn't be bothered.
-        elif message.content.startswith('! '):
+        elif message.content.startswith('!'):
             await message.channel.send("Unknown command. `!help` for commands.")
 
 # Donations function
@@ -226,7 +227,7 @@ def donationStatsHandling():
     #   tictac2      tictac      jeremysuf       jeremy
      '#QL8GPUGV0': '#VLQULJ8V', '#LGLRV0Y09': '#PRU8L9YCR',\
     #   mojie         moojie       smoljie        moojie
-     '#YG8JPL98V': '#2GCVUPYUC', '#Q09LVGPQL': '#YG8JPL98V',\
+     '#YG8JPL98V': '#2GCVUPYUC', '#Q09LVGPQL': '#2GCVUPYUC',\
     #   delph         nige          alan          nige
      '#2Y0LC00UY': '#28ULJVPP', '#L82CCUGV0': '#28ULJVPP'}
 
@@ -247,32 +248,31 @@ def donationStatsHandling():
     #    donationInfo[0] += item["donations"]
     #    donationDict[primaryAccount] = donationInfo
 
-    # Assemble string
+    #if path.exists("donations.json") == False:
+    #    donationsTextJson = open('donations.json', 'w')
+    #    json.dump(donationDict, donationsTextJson)
+    #else:
+    #    if len(open('donations.json').read()) == 0:
+    #        print("The saved json is blank. copying data.")
+    #        donationsTextJson = open('donations.json', 'w')
+    #        json.dump(donationDict, donationsTextJson)
+    #    else:
+    #        donationsTextJson = json.load(open('donations.json', 'r+'))
+    #        for keys in donationsTextJson:
+    #            if donationDict[keys][0] < donationsTextJson[keys][0]:
+    #                temp = donationDict[keys][0]
+    #                donationDict[keys][0] += donationsTextJson[keys][0]
+    #                donationsTextJson[keys][0] += temp
+
     for i in donationDict:
         donationString += (donationDict[i][1])
         if i in altAccounts.values():
             donationString += (" **(Alts)**")
         donationString += (": " + str(donationDict[i][0]) + "\n")
 
-    #if path.exists("donations.txt") == False:
-    #    open('donations.txt', 'w')
-    #else:
-    #    donationsTextJson = json.load(open('donations.txt'))
-    #    if len(donationsTextJson) > len(donationDict):
-    #        biggestLen = donationsTextJson
-    #    elif len(donationsTextJson) < len(donationDict):
-    #        biggestLen = donationDict
-    #    else:
-    #        biggestLen = donationDict
-    #    for keys in biggestLen:
-    #        if donationDict[keys][0] < donationsTextJson[keys][0]:
-    #            donationsTextJson[keys][0] = donationDict[keys][0]
-
-    donationsTextJson = open('donations.txt', 'w')
-
     return donationString
 
-timeElapsed = Timer(1800, donationStatsHandling())
+donationStatsHandling()
 
 # Compare string letters only. 0 in count means compare entire string.
 def compare(str1, str2, count):
@@ -280,7 +280,7 @@ def compare(str1, str2, count):
     regex = re.compile('[^a-z]')
     str1alpha = regex.sub('', str1.lower())
     str2alpha = regex.sub('', str2.lower())
-    
+
     # Compare and return
     if count <= 0:
         return str1 == str2
