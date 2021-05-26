@@ -1,6 +1,7 @@
 # bender.py
 import os
 from os import path
+import sys
 import discord
 from discord.ext import commands
 import random
@@ -14,8 +15,8 @@ from threading import Timer
 
 load_dotenv()
 
-# discord bot token
 TOKEN = os.getenv('DISCORD_TOKEN')
+# discord bot token
 clashApiToken = os.getenv('CLASH_API_TOKEN')
 bot = commands.Bot(command_prefix='!')
 clantag = '#9LU8G8LQ' # Clan Dem tag
@@ -109,7 +110,6 @@ async def on_message(message):
                 person = "<@671078867754287115> bad"
             else:
                 #set up AI overlord ping
-                print(str(message))
                 #for member in guild.members:
                     #print(member.id)
                     #for noob in message.guild.members:
@@ -186,7 +186,10 @@ async def on_message(message):
             
         elif message.content.startswith('!kill') and message.author.id in devs:
             quit()
-
+        
+        elif message.content.startswith('!restart') and message.author.id in devs:
+            os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
+        
         # Bender couldn't be bothered.
         elif message.content.startswith('! '):
             await message.channel.send("Unknown command. `!help` for commands.")
