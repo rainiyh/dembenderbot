@@ -60,7 +60,7 @@ async def on_message(message):
             await message.channel.send(response)
 
         # explain self
-        elif message.content == '!hi' or message.content == '!bot':
+        elif message.content == '!bot':
             response = 'I am Bender. Please insert girder.'
             await message.channel.send(response)
 
