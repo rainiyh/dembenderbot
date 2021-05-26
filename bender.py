@@ -53,10 +53,22 @@ async def on_message(message):
         if in_pare('bot sucks', message.content) or in_pare('bot sux', message.content) or in_pare('bender, you suck', message.content) or in_pare('you, bender', message.content):
             response = 'Bite my shiny metal ass.'
             await message.channel.send(response)
+            
+        elif in_pare('ligma', message.content):
+            response = 'Ligma shiny metal balls.'
+            await message.channel.send(response)
+            
+        elif in_pare('candice', message.content):
+            response = 'Candice shiny metal dick fit in yo mouf, Samuel?'
+            await message.channel.send(response)
+            
+        elif in_pare('bofa', message.content):
+            response = 'Bofa deez shiny metal nuts'
+            await message.channel.send(response)
 
         # give assistance (very un-bender-like)
         elif message.content.startswith('!help'):
-            response = '`!donations`: List donations \n`!restart`: Restart bot (if it is misbehaving)'
+            response = '`!bot`: greet\n`!donations`: List donations \n`!toss`: Toss a coin\n`!chatname`: Change name of #general\n`!joke`: Tell a joke\n`!roll`: Roll some dice (xdx)\n`!restart`: Restart bot (if it is misbehaving)'
             await message.channel.send(response)
 
         # explain self
@@ -186,9 +198,11 @@ async def on_message(message):
             await channel.edit(name=newname)
 
         elif message.content.startswith('!kill') and message.author.id in devs:
+            print('Kill command executed.')
             quit()
         
         elif message.content.startswith('!restart') and message.author.id in devs:
+            print('Restarting!')
             os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
         
         # Bender couldn't be bothered.
