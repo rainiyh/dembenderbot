@@ -53,15 +53,15 @@ async def on_message(message):
         if in_pare('bot sucks', message.content) or in_pare('bot sux', message.content) or in_pare('bender, you suck', message.content) or in_pare('you, bender', message.content):
             response = 'Bite my shiny metal ass.'
             await message.channel.send(response)
-            
+
         elif in_pare('ligma', message.content):
             response = 'Ligma shiny metal balls.'
             await message.channel.send(response)
-            
+
         elif in_pare('candice', message.content):
             response = 'Candice shiny metal dick fit in yo mouf, Samuel?'
             await message.channel.send(response)
-            
+
         elif in_pare('bofa', message.content):
             response = 'Bofa deez shiny metal nuts'
             await message.channel.send(response)
@@ -200,11 +200,11 @@ async def on_message(message):
         elif message.content.startswith('!kill') and message.author.id in devs:
             print('Kill command executed.')
             quit()
-        
+
         elif message.content.startswith('!restart') and message.author.id in devs:
             print('Restarting!')
             os.execl(sys.executable, 'python', __file__, *sys.argv[1:])
-        
+
         # Bender couldn't be bothered.
         elif message.content.startswith('!'):
             await message.channel.send("Unknown command. `!help` for commands.")
@@ -249,18 +249,18 @@ def donationStatsHandling():
     donationDict = {}
 
     # Check if given player is in the list, if it's an alt, add it to main account instead of separately displaying
-    #for item in playerData['items']:
-    #    account = item['tag']
-    #    if account in altAccounts:
-    #        primaryAccount = altAccounts[account]
-    #    else:
-    #        primaryAccount = account
-    #    if primaryAccount in donationDict:
-    #        donationInfo = donationDict[primaryAccount]
-    #    else:
-    #        donationInfo = [0, item['name']]
-    #    donationInfo[0] += item["donations"]
-    #    donationDict[primaryAccount] = donationInfo
+    for item in playerData['items']:
+        account = item['tag']
+        if account in altAccounts:
+            primaryAccount = altAccounts[account]
+        else:
+            primaryAccount = account
+        if primaryAccount in donationDict:
+            donationInfo = donationDict[primaryAccount]
+        else:
+            donationInfo = [0, item['name']]
+        donationInfo[0] += item["donations"]
+        donationDict[primaryAccount] = donationInfo
 
     #if path.exists("donations.json") == False:
     #    donationsTextJson = open('donations.json', 'w')
@@ -286,7 +286,6 @@ def donationStatsHandling():
 
     return donationString
 
-donationStatsHandling()
 
 # Compare string letters only. 0 in count means compare entire string.
 def compare(str1, str2, count):
